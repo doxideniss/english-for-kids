@@ -34,8 +34,11 @@ window.onload = () => {
   menuItem.forEach((x) => {
     const navItem = createNode('li', 'menu__item');
     const navLink = createNode('a', 'menu__link');
+    const locationHash = window.location.hash.replace('#', '');
 
-    if (x.link === '/') {
+    console.log(x.link, locationHash);
+
+    if (x.link === locationHash) {
       navItem.classList.add('menu__item_active');
     }
 
@@ -55,9 +58,9 @@ window.onload = () => {
   });
   burgerMenu.append(burgerMenuIcon);
 
-  header.append(burgerMenu);
+  header.append(burgerMenu, nav);
 
-  container.append(header, nav);
+  container.append(header);
 
   document.body.append(container);
 
@@ -65,10 +68,20 @@ window.onload = () => {
     if (e.target.classList.contains('menu__link')) {
       e.preventDefault();
       window.location.hash = e.target.pathname;
-    }
-    if (!e.target.classList.contains('menu__list')) {
+      nav.querySelectorAll('.menu__item').forEach((x) => {
+        x.classList.remove('menu__item_active');
+      });
+      e.target.parentNode.classList.add('menu__item_active');
       burgerMenuIcon.classList.toggle('burger-menu__icon_open');
       nav.classList.toggle('menu_active');
+    }
+  });
+  window.addEventListener('click', (e) => {
+    if (!(e.target.classList.contains('burger-menu')
+      || e.target.classList.contains('menu__list')
+      || e.target.classList.contains('menu__item'))) {
+      burgerMenuIcon.classList.remove('burger-menu__icon_open');
+      nav.classList.remove('menu_active');
     }
   });
   window.addEventListener('hashchange', () => {
