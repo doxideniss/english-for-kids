@@ -1,17 +1,15 @@
-const categoriesCards = [
-  {
-    title: 'Action (set A)',
-    link: '/actionA',
-    img: '',
-  },
-];
+import data from './js/cardsData';
 
 const menuItem = [
   {
     title: 'Main',
-    link: '/',
+    linkURL: '/',
   },
-  ...categoriesCards,
+  ...data,
+  {
+    title: 'Statistics',
+    linkURL: '/statistics',
+  },
 ];
 
 const createNode = (tag, ...classes) => {
@@ -36,14 +34,12 @@ window.onload = () => {
     const navLink = createNode('a', 'menu__link');
     const locationHash = window.location.hash.replace('#', '');
 
-    console.log(x.link, locationHash);
-
-    if (x.link === locationHash) {
+    if (x.linkURL === locationHash) {
       navItem.classList.add('menu__item_active');
     }
 
     navLink.innerText = x.title;
-    navLink.href = x.link;
+    navLink.href = x.linkURL;
 
     navItem.append(navLink);
     navMenu.append(navItem);
@@ -53,6 +49,7 @@ window.onload = () => {
   const burgerMenu = createNode('div', 'burger-menu');
   const burgerMenuIcon = createNode('div', 'burger-menu__icon');
   burgerMenu.addEventListener('click', () => {
+    console.log('123');
     burgerMenuIcon.classList.toggle('burger-menu__icon_open');
     nav.classList.toggle('menu_active');
   });
@@ -77,7 +74,9 @@ window.onload = () => {
     }
   });
   window.addEventListener('click', (e) => {
+    console.log(e.target);
     if (!(e.target.classList.contains('burger-menu')
+      || e.target.classList.contains('burger-menu__icon')
       || e.target.classList.contains('menu__list')
       || e.target.classList.contains('menu__item'))) {
       burgerMenuIcon.classList.remove('burger-menu__icon_open');
