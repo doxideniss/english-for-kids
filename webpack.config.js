@@ -1,50 +1,52 @@
-const webpack = require("webpack")
-const path = require("path")
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+// eslint-disable-next-line no-unused-vars
+const webpack = require('webpack');
+const path = require('path');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 const optimizator = (isProd) => {
   const config = {
     splitChunks: {
-      chunks: 'all'
-    }
-  }
+      chunks: 'all',
+    },
+  };
 
   if (isProd) {
     config.minimizer = [
       new OptimizeCssAssetsPlugin(),
-      new TerserPlugin()
-    ]
+      new TerserPlugin(),
+    ];
   }
 
-  return config
-}
+  return config;
+};
 
-jsLoader = (isProd) => {
-  let loaders = [
+const jsLoader = (isProd) => {
+  const loaders = [
     {
       loader: 'babel-loader',
       options: {
         presets: ['@babel/preset-env']
-      }
-    }
+      },
+    },
   ]
 
   if (!isProd) {
-    loaders.push('eslint-loader')
+    loaders.push('eslint-loader');
   }
 
-  return loaders
+  return loaders;
 
 }
 
-const fileName = (ext, isProd) => isProd ?`[name][hash].${ext}` : `[name].${ext}`
+const fileName = (ext, isProd) => isProd ? `[name][hash].${ext}` : `[name].${ext}`;
 
 module.exports = (env, options) => {
-  const isProd = options.mode === 'production'
+  const isProd = options.mode === 'production';
 
   const config = {
     context: path.resolve(__dirname, 'src'),
@@ -53,28 +55,34 @@ module.exports = (env, options) => {
     entry: ['@babel/polyfill', './script.js', './sass/style.scss'],
     output: {
       filename: fileName('js', isProd),
-      path: path.resolve(__dirname, 'dist')
+      path: path.resolve(__dirname, 'dist'),
     },
     optimization: optimizator(isProd),
-    devtool: isProd ? 'none': 'source-map',
+    devtool: isProd ? 'none' : 'source-map',
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: './index.html',
         minify: {
-          collapseWhitespace: isProd
-        }
+          collapseWhitespace: isProd,
+        },
       }),
       new MiniCssExtractPlugin({
-        filename: fileName('css')
+        filename: fileName('css'),
       }),
+      new CopyPlugin([
+        {
+          from: './data/**/*',
+          to: './',
+        },
+      ]),
     ],
     module: {
       rules: [
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: jsLoader(isProd)
+          use: jsLoader(isProd),
         },
         {
           test: /\.s(a|c)ss$/i,
@@ -83,8 +91,8 @@ module.exports = (env, options) => {
               loader: MiniCssExtractPlugin.loader,
               options: {
                 hmr: !isProd,
-                reloadAll: true
-              }
+                reloadAll: true,
+              },
             },
             'css-loader',
             'sass-loader',
@@ -100,18 +108,21 @@ module.exports = (env, options) => {
         },
         {
           test: /\.html$/i,
-          loader: 'html-loader',
+          use: [
+            {
+              loader: 'html-loader',
+            },
+          ],
         },
-      ]
+      ],
     },
     devServer: {
       contentBase: path.join(__dirname, 'dist'),
       compress: true,
       hot: !isProd,
-      port: 9000
-    }
-  }
+      port: 9000,
+    },
+  };
 
-  return config
-
-}
+  return config;
+};
