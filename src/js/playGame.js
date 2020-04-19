@@ -43,8 +43,7 @@ export default class Game {
     if (isRight) {
       this.answers.push(true);
       this.playAudio(correctAudio);
-      this.cards = this.cards.filter((x) => x !== this.currentCard);
-      this.currentCardIndex = 0;
+      this.currentCardIndex += 1;
       if (this.currentCardIndex !== this.cards.length) {
         this.setCurrentCard(this.cards[this.currentCardIndex]);
         setTimeout(() => {
@@ -55,16 +54,9 @@ export default class Game {
       }
       card.classList.add('card_correct');
     } else {
-      const randomIdxCards = Math.floor(Math.random() * this.cards.length);
-      this.currentCardIndex = randomIdxCards;
-      this.setCurrentCard(this.cards[this.currentCardIndex]);
       this.answers.push(false);
       this.playAudio(errorAudio);
-      setTimeout(() => {
-        this.playCurrentAudio();
-      }, 500);
     }
-    console.log(this.cards);
     return isRight;
   }
 
