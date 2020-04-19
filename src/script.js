@@ -82,8 +82,10 @@ const render = () => {
   const startGameBtn = document.querySelector('.start-game');
   const toggleInput = document.querySelector('.toggle-box__input');
   createCards(category);
-  if (window.location.hash !== '#/' && !toggleInput.checked) {
+  if (window.location.hash !== '#/' && window.location.hash !== '' && !toggleInput.checked) {
     startGameBtn.classList.remove('none');
+  } else if (toggleInput.checked) {
+    startGameBtn.classList.add('none');
   }
 };
 
@@ -151,7 +153,7 @@ const createHeader = () => {
       game.stopGame();
     } else {
       containerCards.classList.add('cards-container_play');
-      if (window.location.hash !== '#/') {
+      if (window.location.hash !== '#/' && window.location.hash !== '') {
         startGameBtn.classList.remove('none');
       }
     }
