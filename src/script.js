@@ -7,10 +7,6 @@ const menuItem = [
     linkURL: '/',
   },
   ...data,
-  {
-    title: 'Statistics',
-    linkURL: '/statistics',
-  },
 ];
 
 const playAudio = (src) => {
