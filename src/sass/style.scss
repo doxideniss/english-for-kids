@@ -16,6 +16,12 @@ $burger-menu-width: 40px;
   padding: 30px;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .burger-menu {
   height: $burger-menu-width;
   width: $burger-menu-width;
@@ -109,6 +115,89 @@ $burger-menu-width: 40px;
   color: #fff;
   font-size: 26px;
   text-decoration: none;
+}
+
+.toggle-box {
+  position: relative;
+  width: 120px;
+  height: 40px;
+  .toggle-box__input,
+  .toggle-box__label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    cursor: pointer;
+  }
+  .toggle-box__input {
+    opacity: 0;
+    z-index: 4;
+  }
+  .toggle-box__input:checked + .toggle-box__label {
+    background: linear-gradient(40deg,#00bf82,#0099ae);
+    .toggle-box__on {
+      opacity: 1;
+    }
+    .toggle-box__off {
+      opacity: 0;
+    }
+    .toggle-box__handle {
+      left: 83px;
+      box-shadow: -1px 1px 5px rgba(0,0,0,.2);
+    }
+  }
+  .toggle-box__label {
+    right: 0;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: inset 0 -1px #fff, inset 0 1px 1px rgba(0,0,0,.05);
+    background: linear-gradient(40deg,#ffd86f,#fc6262);
+    font-size: 16px;
+    line-height: 40px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  span {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    transition: opacity 0.2s;
+  }
+  .toggle-box__on {
+    left: 10px;
+    opacity: 0;
+  }
+  .toggle-box__off {
+    right: 10px;
+  }
+  .toggle-box__handle {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 33px;
+    height: 33px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.2);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(40%,#fff),to(#f0f0f0));
+    background-image: linear-gradient(180deg,#fff 40%,#f0f0f0);
+    transition: left .15s ease-out;
+    &:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -6px 0 0 -6px;
+      width: 12px;
+      height: 12px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      box-shadow: inset 0 1px rgba(0,0,0,.02);
+      background-image: -webkit-gradient(linear,left top,left bottom,from(#eee),to(#fff));
+      background-image: linear-gradient(180deg,#eee,#fff);
+    }
+  }
 }
 
 .cards-container {
@@ -243,6 +332,7 @@ $burger-menu-width: 40px;
   top: 0;
   left: -100%;
 }
+
 
 @media (max-width: 1024px) {
   .cards-container > div {

@@ -143,7 +143,20 @@ const createHeader = () => {
     }
   });
 
-  header.append(burgerMenu, nav);
+  const toggleBtn = createNode('div', 'toggle-box');
+  const toggleInput = createNode('input', 'toggle-box__input');
+  toggleInput.type = 'checkbox';
+  toggleInput.checked = true;
+  const toggleLabel = createNode('label', 'toggle-box__label');
+  toggleLabel.innerHTML = `<span class="toggle-box__on">Train</span>
+    <span class="toggle-box__off">Play</span>
+    <div class="toggle-box__handle"></div>`;
+  toggleBtn.append(toggleInput, toggleLabel);
+  toggleInput.addEventListener('click', (e) => {
+    console.log(e);
+  });
+
+  header.append(burgerMenu, nav, toggleBtn);
   return header;
 };
 
