@@ -1,4 +1,5 @@
 import data from './js/cardsData';
+import Game from './js/playGame';
 
 const menuItem = [
   {
@@ -21,6 +22,8 @@ const playAudio = (src) => {
     audio.play();
   }, 0);
 };
+
+const game = new Game(playAudio);
 
 const closeBurgerMenu = () => {
   const nav = document.querySelector('.menu');
@@ -72,30 +75,16 @@ const createCards = (category) => {
     ));
   }
   cardsContainer.innerHTML = cards.join('');
-  cardsContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('card__rotate')) {
-      const card = e.target.closest('.card');
-      card.classList.add('card_active');
-    } else if (e.target.closest('.category-card')) {
-      const card = e.target.closest('.category-card');
-      setPage(card.dataset.url);
-    } else if (e.target.closest('.card__front')) {
-      const srcAudio = e.target.closest('.card').dataset.audio;
-      playAudio(srcAudio);
-    }
-  });
-  cardsContainer.addEventListener('mouseover', (e) => {
-    if (e.target.classList.contains('cards-container')) {
-      cardsContainer.querySelectorAll('.card').forEach((el) => {
-        el.classList.remove('card_active');
-      });
-    }
-  });
 };
 
 const render = () => {
   const category = window.location.hash.replace('#', '');
+  const startGameBtn = document.querySelector('.start-game');
+  const toggleInput = document.querySelector('.toggle-box__input');
   createCards(category);
+  if (window.location.hash !== '#/' && !toggleInput.checked) {
+    startGameBtn.classList.remove('none');
+  }
 };
 
 const createNode = (tag, ...classes) => {
@@ -153,7 +142,19 @@ const createHeader = () => {
     <div class="toggle-box__handle"></div>`;
   toggleBtn.append(toggleInput, toggleLabel);
   toggleInput.addEventListener('click', (e) => {
-    console.log(e);
+    const containerCards = document.querySelector('.cards-container');
+    const startGameBtn = document.querySelector('.start-game');
+    if (e.target.checked) {
+      containerCards.classList.remove('cards-container_play');
+      startGameBtn.classList.add('none');
+      startGameBtn.classList.remove('start-game_repeat');
+      game.stopGame();
+    } else {
+      containerCards.classList.add('cards-container_play');
+      if (window.location.hash !== '#/') {
+        startGameBtn.classList.remove('none');
+      }
+    }
   });
 
   header.append(burgerMenu, nav, toggleBtn);
@@ -165,12 +166,103 @@ const createAudio = () => {
   return audio;
 };
 
+const createStartBtn = () => {
+  const startBtn = createNode('div', 'start-game', 'none');
+  startBtn.innerText = 'Start Game';
+
+  startBtn.addEventListener('click', () => {
+    if (game.isStarted()) {
+      game.playCurrentAudio();
+    } else {
+      const category = window.location.hash.replace('#/', '');
+      const starsContainer = document.querySelector('.stars-container');
+      game.startGame(category);
+      startBtn.classList.add('start-game_repeat');
+      starsContainer.classList.remove('none');
+    }
+  });
+  return startBtn;
+};
+
+const showWinGame = () => {
+  const cardsContainer = document.querySelector('.cards-container');
+  cardsContainer.innerHTML = `<div class="result-game">
+    <div>WIN!</div>
+    <img src="./data/img/success.jpg" alt="success">
+</div>`;
+};
+
+const showLostGame = (errorsCount) => {
+  const cardsContainer = document.querySelector('.cards-container');
+  cardsContainer.innerHTML = `<div class="result-game">
+    <div>${errorsCount} errors!</div>
+    <img src="./data/img/failure.jpg" alt="failure">
+</div>`;
+};
+
+const createStar = (isRight) => {
+  const star = createNode('div', 'star', isRight ? 'star_success' : 'star_error');
+  return star;
+};
+
+const addStars = (isRight) => {
+  const starsContainer = document.querySelector('.stars-container');
+  starsContainer.append(createStar(isRight));
+};
+
+const addCardContainerHandlers = () => {
+  const cardsContainer = document.querySelector('.cards-container');
+  cardsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('card__rotate')) {
+      const card = e.target.closest('.card');
+      card.classList.add('card_active');
+    } else if (e.target.closest('.category-card')) {
+      const card = e.target.closest('.category-card');
+      setPage(card.dataset.url);
+    } else if (e.target.closest('.card__front') && !cardsContainer.classList.contains('cards-container_play')) {
+      const srcAudio = e.target.closest('.card').dataset.audio;
+      playAudio(srcAudio);
+    } else if (game.isStarted() && e.target.closest('.card') && cardsContainer.classList.contains('cards-container_play')) {
+      const isRight = game.checkCardClick(e.target.closest('.card'));
+      addStars(isRight);
+      if (game.isGameEnd()) {
+        const starsContainer = document.querySelector('.stars-container');
+        const startBtn = document.querySelector('.start-game');
+        const inCorrectAnswers = game.getIncorrectAnswersLength();
+        starsContainer.classList.add('none');
+        starsContainer.innerHTML = '';
+        startBtn.classList.add('none');
+        startBtn.classList.remove('start-game_repeat');
+        if (inCorrectAnswers) {
+          playAudio('./data/audio/failure.mp3');
+          showLostGame(inCorrectAnswers);
+        } else {
+          playAudio('./data/audio/success.mp3');
+          showWinGame();
+        }
+        setTimeout(() => {
+          window.location.hash = '/';
+        }, 3000);
+      }
+    }
+  });
+  cardsContainer.addEventListener('mouseover', (e) => {
+    if (e.target.classList.contains('cards-container')) {
+      cardsContainer.querySelectorAll('.card').forEach((el) => {
+        el.classList.remove('card_active');
+      });
+    }
+  });
+};
+
 const generatePage = () => {
   const container = createNode('div', 'container');
   const cardsContainer = createNode('div', 'cards-container');
   const header = createHeader();
+  const starsContainer = createNode('div', 'none', 'stars-container');
+  const startBtn = createStartBtn();
   const audio = createAudio();
-  container.append(header, cardsContainer, audio);
+  container.append(header, starsContainer, cardsContainer, startBtn, audio);
   document.body.append(container);
 };
 
@@ -190,6 +282,7 @@ const addWindowHandler = () => {
 
 window.onload = () => {
   generatePage();
+  addCardContainerHandlers();
   addWindowHandler();
   render();
 };

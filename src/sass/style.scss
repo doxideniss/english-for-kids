@@ -205,14 +205,30 @@ $burger-menu-width: 40px;
   justify-content: space-between;
   flex-wrap: wrap;
   width: 100%;
-  margin-top: 50px;
+  margin-top: 20px;
   font-weight: 700;
   & > div {
     flex-basis: 23%;
   }
+  &_play {
+    .category-card .category-card__img{
+      background: linear-gradient(180deg,#fd6a63,#feb46b 57%,#fff 0,#fff);
+    }
+    .card {
+      .card__title,
+      .card__rotate {
+        opacity: 0;
+        width: 0;
+      }
+      &::before {
+        padding-top: 66%;
+      }
+    }
+  }
 }
 
 .category-card {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -261,10 +277,14 @@ $burger-menu-width: 40px;
   &_active .card__inner {
     transform: rotateY(180deg);
   }
+  &_correct {
+    opacity: .5;
+  }
   &::before {
     content: '';
     float: left;
     padding-top: 100%;
+    transition: padding-top 0.3s;
   }
 }
 
@@ -333,6 +353,73 @@ $burger-menu-width: 40px;
   left: -100%;
 }
 
+.start-game {
+  text-align: center;
+  cursor: pointer;
+  padding: 10px 15px;
+  background: linear-gradient(40deg, #ffd86f, #fc6262);
+  color: #fff;
+  border-radius: 10px;
+  width: 156px;
+  margin: 0 auto;
+  font-size: 24px;
+  font-weight: 700;
+  transition: opacity 0.3s;
+  &_repeat {
+    width: 65px;
+    height: 65px;
+    font-size: 0;
+    background-image: url(../data/img/repeat.svg),linear-gradient(40deg,#ffd86f,#fc6262);
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: 32px 32px,cover;
+    background-position: 50%;
+  }
+}
+
+.none {
+  box-sizing: border-box;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.stars-container {
+  margin-top: 20px;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.star {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  background-size: 40px 40px;
+  &_success {
+    background-image: url(../data/img/star-win.svg);
+  }
+  &_error {
+    background-image: url(../data/img/star.svg);
+  }
+}
+
+.result-game {
+  flex-basis: 100% !important;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  img {
+    object-fit: contain;
+    margin-top: 10px;
+  }
+}
 
 @media (max-width: 1024px) {
   .cards-container > div {
